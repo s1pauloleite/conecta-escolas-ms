@@ -1,0 +1,47 @@
+# Ambiente virtual / bytecode
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Banco de dados gerado localmente (recriado via database.py + etl.py).
+# Exceção: govtech_ms.db é versionado de propósito — é só 0,43 MB e é o
+# snapshot já populado que o app lê em produção (Streamlit Community
+# Cloud não tem como rodar etl.py lá, pois depende dos arquivos brutos
+# grandes em data/raw/ e da planilha manual do NIC.br, que continuam
+# fora do repositório).
+*.db
+!govtech_ms.db
+
+# Trilha de auditoria gerada pelo ETL (regenerável a partir de etl.py)
+data/*.csv
+
+# Snapshots de dados oficiais (fetch_dados_oficiais.py / processar_censo_escolar.py)
+# e o microdado bruto do INEP (~512 MB) — grandes demais para versionar e
+# fáceis de regerar; ver data/raw/README.md (mantido no repositório).
+data/raw/*
+!data/raw/README.md
+
+# Planilhas exportadas manualmente de painéis sem API (ex.: NIC.br) — ver
+# DownloadManual/README.md. Grandes e específicas de quem exportou; não
+# versionadas.
+DownloadManual/*
+!DownloadManual/README.md
+
+# Cache de testes e ferramentas
+.pytest_cache/
+.ruff_cache/
+
+# Segredos locais do Streamlit (se algum dia forem usados)
+.streamlit/secrets.toml
+
+# Arquivos de IDE/SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Configuração local do Claude Code (específica da máquina, não do projeto)
+.claude/
+.agents/

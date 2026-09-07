@@ -1,0 +1,28 @@
+# Tema claro (padrão) e escuro do GovTech MS.
+# O usuário troca entre eles pelo menu ⋮ (canto superior direito) →
+# Settings → Theme → Light / Dark / Use system setting — não precisa
+# reiniciar o painel.
+
+[theme]
+font = "sans serif"
+# Usado só como fallback caso o Streamlit não reconheça [theme.light]/[theme.dark]
+# (versões bem antigas) — mantém o painel utilizável mesmo assim.
+primaryColor = "#1B5E20"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F3F4"
+textColor = "#1A1A1A"
+
+[theme.light]
+primaryColor = "#1B5E20"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F3F4"
+textColor = "#1A1A1A"
+
+[theme.dark]
+primaryColor = "#66BB6A"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#1C1F26"
+textColor = "#FAFAFA"
+
+[browser]
+gatherUsageStats = false

@@ -1,0 +1,265 @@
+# PROJETO: GovTech MS — Painel Integrado de Conectividade Escolar
+## Documento de Especificações para Geração de Código por IA
+
+Claude, você atuará como Engenheiro de Software Sênior e Cientista de Dados para o desenvolvimento do projeto "GovTech MS" para o Mestrado em Computação Aplicada na UFMS (disciplina de Governança, Empreendedorismo e Inovação). 
+
+### Autores do Projeto:
+- Paulo Henrique da Silva Leite
+- Gabriel Angeramis Vargas Goulart
+- Ícaro Mateus Gonçalves
+- Ávalos Luan Vitor Rodrigues de Jesus
+
+---
+
+## 1. Contexto de Negócio e Metodologia
+O projeto consiste em um painel inteligente voltado à gestão pública (GovTech) para diagnosticar e resolver os problemas de conectividade nas escolas do estado de Mato Grosso do Sul (MS). 
+
+Como ponto de partida, utilizamos o Ranking Connected Smart Cities 2025, que avalia todas as cidades brasileiras por meio de média simples e fontes secundárias. No entanto, o indicador de "Porcentagem de Escolas com Banda Larga" do ranking (proveniente do Censo Escolar/INEP) é meramente declaratório e estático. 
+
+Nossa solução inovadora propõe uma avaliação dinâmica em 3 fases:
+- **Fase 1 (Mapeamento):** Levantamento espacial de todas as escolas (urbanas e rurais) e dados de governança pública dos 79 municípios de MS.
+- **Fase 2 (Comparativo Técnico):** Cruzamento do número de matrículas (INEP) com a velocidade real medida nas escolas pelo SIMET (NIC.br) para calcular o índice de banda larga por aluno no turno de pico (Meta ENEC: 1 Mbps por aluno).
+- **Fase 3 (Engenharia de Soluções):** Mapeamento automático de provedores regionais e análise de custo-benefício para alternativas tecnológicas (como satélites de órbita baixa - LEO) onde há gargalo físico de fibra óptica.
+
+---
+
+## 2. Estrutura do Repositório do Projeto
+Crie a seguinte árvore de diretórios e arquivos:
+```text
+govtech-ms/
+│
+├── app.py                      # Aplicação Streamlit (Interface Visual)
+├── database.py                 # Criação e manipulação do banco SQLite
+├── etl.py                      # Script de extração, limpeza e carga de dados
+├── requirements.txt            # Dependências do projeto
+└── data/                       # Diretório para armazenamento de arquivos brutos CSV
+Escreva no requirements.txt as seguintes bibliotecas:
+streamlit>=1.30.0
+pandas>=2.0.0
+plotly>=5.15.0
+sqlite3
+folium>=0.14.0
+streamlit-folium>=0.11.0
+3. Arquitetura do Banco de Dados (SQLite)
+Escreva o arquivo database.py para criar o arquivo de banco de dados govtech_ms.db e rodar o script SQL DDL de criação de tabelas abaixo:
+import sqlite3
+
+def criar_banco_dados():
+    conexao = sqlite3.connect("govtech_ms.db")
+    cursor = conexao.cursor()
+    
+    # 1. Tabela de Municípios (Dados de Governança do Smart Cities)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS municipios (
+        co_municipio INTEGER PRIMARY KEY,
+        no_municipio TEXT NOT NULL,
+        nota_transparencia_ebt REAL, -- Escala Brasil Transparente (CGU)
+        investimento_per_capita_educacao REAL, -- Siconfi (Tesouro Nacional)
+        conselho_educacao_ativo INTEGER DEFAULT 1, -- MUNIC (IBGE)
+        populacao_estimada INTEGER
+    );
+    """)
+    
+    # 2. Tabela de Escolas (Microdados INEP Censo Escolar)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS escolas (
+        co_entidade INTEGER PRIMARY KEY,
+        no_entidade TEXT NOT NULL,
+        co_municipio INTEGER,
+        tp_localizacao TEXT CHECK(tp_localizacao IN ('Urbana', 'Rural')),
+        in_internet INTEGER DEFAULT 0,
+        in_banda_larga INTEGER DEFAULT 0,
+        qt_matriculas INTEGER DEFAULT 0,
+        latitude REAL,
+        longitude REAL,
+        FOREIGN KEY (co_municipio) REFERENCES municipios(co_municipio)
+    );
+    """)
+    
+    # 3. Tabela de Medições Reais (SIMET / NIC.br)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS medicoes_simet (
+        co_medicao INTEGER PRIMARY KEY AUTOINCREMENT,
+        co_entidade INTEGER,
+        velocidade_download_real REAL, -- em Mbps
+        velocidade_upload_real REAL, -- em Mbps
+        latencia REAL, -- em ms
+        perda_pacotes REAL, -- em %
+        data_medicao TEXT,
+        FOREIGN KEY (co_entidade) REFERENCES escolas(co_entidade)
+    );
+    """)
+    
+    # 4. Tabela de Alternativas de Mercado (Provedores e Tecnologias)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS alternativas_mercado (
+        co_provedor INTEGER PRIMARY KEY AUTOINCREMENT,
+        tecnologia TEXT CHECK(tecnologia IN ('Fibra Óptica', 'Satélite LEO', 'Rádio WISP')),
+        no_provedor TEXT NOT NULL,
+        velocidade_oferta REAL, -- em Mbps
+        custo_mensal REAL, -- em R$
+        viabilidade_rural INTEGER DEFAULT 0
+    );
+    """)
+    
+    conexao.commit()
+    conexao.close()
+    print("Banco de dados 'govtech_ms.db' criado e estruturado com sucesso!")
+
+if __name__ == "__main__":
+    criar_banco_dados()
+4. Pipeline de Ingestão de Dados (etl.py)
+Crie o arquivo etl.py para simular a carga dos dados de Mato Grosso do Sul (UF = 50) a partir de arquivos CSVs hipotéticos do INEP e do SIMET, e injetar alguns registros reais e sintéticos para que o painel mostre dados de MS imediatamente.
+import pandas as pd
+import sqlite3
+import random
+
+def carregar_dados_iniciais():
+    conexao = sqlite3.connect("govtech_ms.db")
+    cursor = conexao.cursor()
+    
+    # 1. Populando Municípios com dados reais de MS e índices de governança sintéticos
+    municipios_ms = [
+        (5002704, "Campo Grande", 9.8, 1200.50, 1, 900000),
+        (5003702, "Dourados", 8.5, 950.80, 1, 225000),
+        (5003207, "Corumbá", 7.2, 850.40, 1, 112000),
+        (5008305, "Três Lagoas", 8.9, 1100.20, 1, 125000),
+        (5006606, "Ponta Porã", 6.8, 790.15, 1, 92000),
+        (5001102, "Aquidauana", 7.0, 810.00, 1, 48000),
+        (5001904, "Bataguassu", 8.2, 1350.00, 1, 23000),
+        (5002407, "Caarapó", 7.5, 900.00, 1, 30000),
+        (5003157, "Corguinho", 6.0, 720.00, 0, 6000),
+        (5004304, "Guia Lopes da Laguna", 6.2, 740.00, 1, 10000),
+        (5005004, "Itaporã", 7.8, 880.00, 1, 24000),
+        (5006200, "Nova Alvorada do Sul", 7.1, 920.00, 1, 22000),
+        (5007307, "Rio Negro", 5.9, 680.00, 0, 5000)
+    ]
+    cursor.executemany("""
+    INSERT OR REPLACE INTO municipios (co_municipio, no_municipio, nota_transparencia_ebt, investimento_per_capita_educacao, conselho_educacao_ativo, populacao_estimada)
+    VALUES (?, ?, ?, ?, ?, ?);
+    """, municipios_ms)
+    
+    # 2. Populando Escolas de MS (Sugerindo escolas urbanas e rurais)
+    escolas_ms = []
+    random.seed(42)
+    
+    escolas_nomes = [
+        ("EE Maria Constança", "Urbana", 5002704, -20.464, -54.612),
+        ("EM Agrícola Gov. Arnaldo Estevão de Figueiredo", "Rural", 5002704, -20.621, -54.380),
+        ("EE Presidente Vargas", "Urbana", 5003702, -22.223, -54.808),
+        ("EE Rural Castro Alves", "Rural", 5003702, -22.140, -54.610),
+        ("EE Júlia Gonçalves Passarinho", "Urbana", 5003207, -19.005, -57.653),
+        ("EM Rural Carlos Carone", "Rural", 5003207, -19.220, -57.410),
+        ("EE JOMAP", "Urbana", 5008305, -20.785, -51.705),
+        ("EM Rural Arapuá", "Rural", 5008305, -20.640, -51.920),
+        ("EE Adê Marques", "Urbana", 5006606, -22.535, -55.725),
+        ("EM Rural Nova Conquista", "Rural", 5006606, -22.680, -55.910),
+        ("EE Marechal Deodoro", "Urbana", 5001102, -20.472, -55.789),
+        ("EM Rural Pantaneira", "Rural", 5001102, -20.210, -56.120),
+        ("EE Marechal Rondon", "Urbana", 5003157, -19.829, -54.829),
+        ("EM Rural de Corguinho", "Rural", 5003157, -19.710, -54.910),
+        ("EE Salustiano Azevedo", "Urbana", 5004304, -21.428, -56.115),
+        ("EM Rural Santa Maria", "Rural", 5004304, -21.550, -55.980),
+        ("EE Olivia de Paula", "Urbana", 5007307, -19.447, -54.991),
+        ("EM Rural Rio Negro", "Rural", 5007307, -19.320, -55.120)
+    ]
+    
+    for i, (nome, localizacao, cod_mun, lat, lon) in enumerate(escolas_nomes):
+        cod_escola = 50000000 + i
+        vagas = random.randint(80, 600)
+        in_net = 1 if random.random() > 0.1 else 0
+        in_banda = 1 if in_net == 1 and random.random() > 0.3 else 0
+        
+        escolas_ms.append((cod_escola, nome, cod_mun, localizacao, in_net, in_banda, vagas, lat, lon))
+        
+    cursor.executemany("""
+    INSERT OR REPLACE INTO escolas (co_entidade, no_entidade, co_municipio, tp_localizacao, in_internet, in_banda_larga, qt_matriculas, latitude, longitude)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+    """, escolas_ms)
+    
+    # 3. Populando Medições Reais (SIMET)
+    medicoes_simet = []
+    for cod_escola, nome, cod_mun, localizacao, in_net, in_banda, vagas, lat, lon in escolas_ms:
+        if in_net == 1:
+            if localizacao == "Urbana":
+                # Escolas urbanas costumam ter velocidades maiores, porém com maior flutuação
+                vel_down = round(random.uniform(20.0, 100.0), 2)
+                vel_up = round(vel_down * random.uniform(0.3, 0.8), 2)
+                latencia = round(random.uniform(15.0, 50.0), 1)
+                perda = round(random.uniform(0.0, 1.5), 2)
+            else:
+                # Escolas rurais costumam ter conexões mais lentas e latências maiores (satélite tradicional ou rádio)
+                vel_down = round(random.uniform(2.0, 15.0), 2)
+                vel_up = round(vel_down * random.uniform(0.2, 0.5), 2)
+                latencia = round(random.uniform(60.0, 600.0), 1) # Latência alta do satélite GEO
+                perda = round(random.uniform(1.0, 5.0), 2)
+            
+            medicoes_simet.append((cod_escola, vel_down, vel_up, latencia, perda, "2026-09-03"))
+            
+    cursor.executemany("""
+    INSERT OR REPLACE INTO medicoes_simet (co_entidade, velocidade_download_real, velocidade_upload_real, latencia, perda_pacotes, data_medicao)
+    VALUES (?, ?, ?, ?, ?, ?);
+    """, medicoes_simet)
+    
+    # 4. Populando Alternativas de Mercado (Provedores Concorrentes)
+    provedores = [
+        ('Fibra Óptica', 'Telecom MS S/A', 100.0, 149.90, 0),
+        ('Fibra Óptica', 'Provedor Regional MS', 200.0, 199.90, 0),
+        ('Satélite LEO', 'Starlink Brasil', 220.0, 235.00, 1),
+        ('Satélite LEO', 'HughesNet', 25.0, 289.00, 1),
+        ('Rádio WISP', 'Rádio Rural MS', 15.0, 120.00, 1)
+    ]
+    cursor.executemany("""
+    INSERT OR REPLACE INTO alternativas_mercado (tecnologia, no_provedor, velocidade_oferta, custo_mensal, viabilidade_rural)
+    VALUES (?, ?, ?, ?, ?);
+    """, provedores)
+    
+    conexao.commit()
+    conexao.close()
+    print("Massa de dados carregada com sucesso!")
+
+if __name__ == "__main__":
+    carregar_dados_iniciais()
+5. Interface Gráfica Interativa (app.py)
+Escreva o arquivo app.py. A interface Streamlit deve ser impecável, profissional e estruturada nas 3 fases planejadas. Use plotly para criar gráficos modernos de comparação e folium para os mapas geográficos.
+Implemente os seguintes recursos em app.py:
+Menu Lateral: Identificação da UFMS, a disciplina, os nomes de vocês quatro como autores e um seletor de "Filtro Geral por Município" de MS (com a opção "Todos os Municípios").
+Guia 1: Fase 1 — Mapeamento de Infraestrutura
+KPIs: Quantidade de escolas municipais mapeadas, % de conectividade geral.
+Visualização: Um mapa de Mato Grosso do Sul (usando folium) plotando marcadores das escolas de MS (Dica: Use marcadores Azuis para Urbanas e Laranja para Rurais, e mude o ícone para "remover" caso estejam sem internet).
+Análise de Discrepância: Gráfico de barras comparativo mostrando a taxa de conectividade de Escolas Rurais vs. Escolas Urbanas agrupadas por município.
+Guia 2: Fase 2 — Comparativo Técnico de Banda por Aluno
+A Lógica Algorítmica: Calcule a banda por aluno no turno de pico (estimando o turno de pico em 40% das matrículas totais).
+Fórmula: (Velocidade SIMET em kbps) / (Matrículas Totais * 0.40).
+Classificação:
+Adequada: >= 1000 kbps/aluno (Cor: Verde)
+Parcial: 100 a 999 kbps/aluno (Cor: Amarela)
+Insuficiente: < 100 kbps/aluno (Cor: Vermelha)
+Visualizações: Gráfico de pizza com a distribuição da qualidade real da conexão estadual e uma tabela interativa das escolas filtradas de MS.
+Guia 3: Fase 3 — Engenharia de Soluções de Mercado & SWOT
+Algoritmo do IPI (Índice de Prioridade de Intervenção): Calcula a prioridade (0 a 100) para cada escola vulnerável usando a fórmula: IPI = (0.50 * (1 - Status_Internet_Banda_Larga)) + (0.30 * (Peso_Rural)) + (0.20 * (Matrículas / Maior_Matrícula_MS)) * 100
+Recomendador Inteligente: Se a escola for rural e sua velocidade medida for < 10 Mbps, sugira a contratação de tecnologia de Satélite LEO (Starlink) ou Provedor Local de Rádio de forma dinâmica. Mostre o custo mensal estimado e o ganho em Mbps.
+Apresentação SWOT: Aba interna exibindo a Matriz SWOT de forma limpa e acadêmica.
+6. Instruções de Execução do Pipeline
+Para iniciar o projeto em seu ambiente, rode os seguintes comandos no terminal:
+# 1. Instalar as dependências do requirements.txt
+pip install -r requirements.txt
+
+# 2. Inicializar o banco de dados SQLite
+python database.py
+
+# 3. Rodar a carga inicial de dados reais e sintéticos
+python etl.py
+
+# 4. Executar o dashboard interativo do Streamlit
+streamlit run app.py
+Claude, certifique-se de escrever códigos limpos, com comentários detalhados e tratamento de erros adequado (ex: tratar divisões por zero ou valores nulos de coordenadas).
+
+---
+
+### O que o Claude Code fará de forma autônoma:
+Ao receber esse documento de especificações, o Claude Code irá:
+1. Criar toda a estrutura física de arquivos do seu projeto.
+2. Gerar o banco de dados estruturado exatamente com a metodologia de governança baseada nas fontes oficiais [1, 2].
+3. Fornecer os algoritmos matemáticos do **IPI** e da **Banda por Aluno** em pleno funcionamento [3].
+4. Criar a interface visual interativa em Streamlit que você pode rodar localmente ou publicar na nuvem do Streamlit Community Cloud para apresentar para a sua banca da **UFMS**.

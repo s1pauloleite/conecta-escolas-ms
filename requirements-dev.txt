@@ -1,0 +1,3 @@
+# Dependências apenas para desenvolvimento/testes (não necessárias para rodar o painel).
+-r requirements.txt
+pytest>=7.4.0
