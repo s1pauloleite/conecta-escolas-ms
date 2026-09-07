@@ -1,5 +1,5 @@
 @echo off
-REM run_app.bat — sobe o painel GovTech MS com um duplo clique.
+REM run_app.bat — sobe o painel ConectaEscolas MS com um duplo clique.
 REM Cria o ambiente virtual e o banco de dados na primeira vez que roda;
 REM nas vezes seguintes, só reaproveita o que já existe e inicia o Streamlit.
 
@@ -7,7 +7,7 @@ setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
 echo ============================================
-echo   GovTech MS - Painel de Conectividade Escolar
+echo   ConectaEscolas MS - Painel de Conectividade Escolar
 echo ============================================
 echo.
 

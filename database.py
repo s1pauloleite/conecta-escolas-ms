@@ -1,7 +1,7 @@
 """
 database.py
 ------------
-Cria e inicializa o esquema (DDL) do banco de dados SQLite do GovTech MS.
+Cria e inicializa o esquema (DDL) do banco de dados SQLite do ConectaEscolas MS.
 
 Este módulo cuida exclusivamente da ESTRUTURA das tabelas. A carga de
 dados (DML) é responsabilidade de `etl.py` — separar as duas coisas evita
@@ -35,7 +35,7 @@ def get_connection() -> sqlite3.Connection:
 
 
 def criar_banco_dados() -> None:
-    """Cria (se ainda não existirem) as tabelas do modelo de dados do GovTech MS."""
+    """Cria (se ainda não existirem) as tabelas do modelo de dados do ConectaEscolas MS."""
     conexao = get_connection()
     try:
         cursor = conexao.cursor()

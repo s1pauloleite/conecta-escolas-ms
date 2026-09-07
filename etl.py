@@ -1,7 +1,7 @@
 """
 etl.py
 -------
-Pipeline de extração, transformação e carga (ETL) de dados do GovTech MS.
+Pipeline de extração, transformação e carga (ETL) de dados do ConectaEscolas MS.
 
 Este script é OFFLINE por design: ele lê o que já estiver em `data/raw/`
 (gerado por `fetch_dados_oficiais.py` e `processar_censo_escolar.py`) e

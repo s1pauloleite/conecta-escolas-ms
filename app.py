@@ -1,7 +1,7 @@
 """
 app.py
 -------
-GovTech MS — Painel Integrado de Conectividade Escolar.
+ConectaEscolas MS — Painel Integrado de Conectividade Escolar.
 
 Interface Streamlit organizada nas 3 fases da metodologia do projeto:
     Fase 1 — Mapeamento de infraestrutura (mapa + KPIs)
@@ -450,7 +450,7 @@ def montar_tabela_recomendacoes(df: pd.DataFrame, alternativas: pd.DataFrame) ->
 
 
 def renderizar_swot() -> None:
-    st.subheader("Matriz SWOT do Projeto GovTech MS")
+    st.subheader("Matriz SWOT do Projeto ConectaEscolas MS")
 
     linha1_esq, linha1_dir = st.columns(2)
     linha2_esq, linha2_dir = st.columns(2)
@@ -579,7 +579,7 @@ def renderizar_fontes_e_metodologia(
     """
     st.header("📚 Fontes de Dados e Metodologia")
     st.markdown(
-        "Resumo de onde vem cada dado usado no GovTech MS e como cada "
+        "Resumo de onde vem cada dado usado no ConectaEscolas MS e como cada "
         "métrica é calculada — para consulta rápida na apresentação."
     )
 
@@ -756,7 +756,7 @@ def renderizar_fontes_e_metodologia(
 
 
 def renderizar_sidebar(municipios: pd.DataFrame, metadados: dict[str, str]) -> str:
-    st.sidebar.title("📡 GovTech MS")
+    st.sidebar.title("📡 ConectaEscolas MS")
     st.sidebar.markdown(
         "**Mestrado em Computação Aplicada — UFMS**  \n"
         "Disciplina: Governança, Empreendedorismo e Inovação"
@@ -803,7 +803,7 @@ def renderizar_sidebar(municipios: pd.DataFrame, metadados: dict[str, str]) -> s
 
 
 def main() -> None:
-    st.set_page_config(page_title="GovTech MS", page_icon="📡", layout="wide")
+    st.set_page_config(page_title="ConectaEscolas MS", page_icon="📡", layout="wide")
 
     conexao = obter_conexao()
     if conexao is None:
@@ -827,7 +827,7 @@ def main() -> None:
     else:
         base_filtrada = base_completa[base_completa["no_municipio"] == municipio_selecionado]
 
-    st.title("GovTech MS — Painel Integrado de Conectividade Escolar")
+    st.title("ConectaEscolas MS — Painel Integrado de Conectividade Escolar")
     st.markdown(
         "Diagnóstico dinâmico da conectividade nas escolas de Mato Grosso do Sul, "
         "cruzando matrículas (INEP) com velocidade real medida na região "

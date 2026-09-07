@@ -1,7 +1,7 @@
 """
 logic.py
 ---------
-Regras de negócio do GovTech MS: cálculo de banda por aluno, classificação
+Regras de negócio do ConectaEscolas MS: cálculo de banda por aluno, classificação
 de qualidade de conexão, Índice de Prioridade de Intervenção (IPI) e
 recomendação de tecnologia alternativa para escolas rurais vulneráveis.
 

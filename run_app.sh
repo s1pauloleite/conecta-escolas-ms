@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# run_app.sh — sobe o painel GovTech MS no Linux/Mac.
+# run_app.sh — sobe o painel ConectaEscolas MS no Linux/Mac.
 # Cria o ambiente virtual e o banco de dados na primeira vez que roda;
 # nas vezes seguintes, só reaproveita o que já existe e inicia o Streamlit.
 set -e
 cd "$(dirname "$0")"
 
 echo "============================================"
-echo "  GovTech MS - Painel de Conectividade Escolar"
+echo "  ConectaEscolas MS - Painel de Conectividade Escolar"
 echo "============================================"
 echo
 

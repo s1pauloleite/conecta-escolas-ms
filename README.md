@@ -1,4 +1,4 @@
-# GovTech MS — Painel Integrado de Conectividade Escolar
+# ConectaEscolas MS — Painel Integrado de Conectividade Escolar
 
 Projeto da disciplina **Governança, Empreendedorismo e Inovação**, do
 **Mestrado em Computação Aplicada da UFMS**.
@@ -12,7 +12,7 @@ Goulart.
 
 O Ranking Connected Smart Cities avalia a conectividade das escolas
 brasileiras a partir de um indicador do Censo Escolar (INEP) que é apenas
-declaratório e estático ("tem ou não tem banda larga"). O GovTech MS
+declaratório e estático ("tem ou não tem banda larga"). O ConectaEscolas MS
 propõe uma avaliação dinâmica, em 3 fases, para os 79 municípios de Mato
 Grosso do Sul:
 
