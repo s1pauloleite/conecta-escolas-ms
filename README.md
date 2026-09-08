@@ -65,6 +65,39 @@ aproximação do grupo, não uma proporção oficial. Detalhado na aba
 [Conviva Educação](https://convivaeducacao.org.br/fique_atento/4704) ·
 [Nota Técnica nº 182/2025/DAGE/SEB (MEC)](https://www.gov.br/mec/pt-br/escolas-conectadas/arquivos/NotaTcnica.pdf).
 
+**Sobre o IPI — Índice de Prioridade de Intervenção (Fase 3):** ao
+contrário da banda por aluno, o IPI **não tem fonte oficial** — é um
+índice autoral do grupo, criado para este trabalho. Não existe, em
+nenhum órgão (MEC, INEP, Anatel), uma fórmula numérica publicada
+combinando conectividade + ruralidade + porte da escola; os pesos
+50%/30%/20% e a forma de combiná-los foram definidos pela equipe, sem
+correspondência numérica em fonte externa. O que é real é só o
+**princípio** por trás do termo de maior peso (50% para "não possui
+banda larga"): programas brasileiros de conectividade escolar como o
+**FUST** e o **PBLE** (Programa Banda Larga nas Escolas, Anatel/FNDE-MEC)
+já usam como critério priorizar primeiro escolas "em regiões de maior
+vulnerabilidade e sem conectividade adequada" — mas de forma
+qualitativa (uma lista de critérios), não como uma fórmula com pesos. O
+IPI formaliza essa mesma lógica numericamente, por conta própria do
+grupo. Fonte de contexto (não da fórmula): [Futurecom — O uso do FUST
+para conectividade nas escolas rurais](https://digital.futurecom.com.br/transformaodigital/gov/o-uso-do-fust-para-conectividade-nas-escolas-rurais/).
+
+**Sobre a velocidade estimada por escola (calibração com Ookla):** o
+**centro** da simulação é real — a média de download/upload/latência do
+Ookla Speedtest por município, medida de verdade. Mas os **fatores
+0,80x–1,30x (urbana) e 0,15x–0,45x (rural)** que espalham cada escola em
+torno dessa média **não vêm de nenhuma fonte externa** — são suposição
+do grupo, sem correspondência numérica publicada em nenhum órgão. O que
+é real é a **direção**: a pesquisa **TIC Domicílios** (NIC.br/Cetic.br)
+mostra que a zona rural brasileira tem conexão estruturalmente pior que
+a urbana (64% dos domicílios urbanos com fibra/cabo contra 39% dos
+rurais, que dependem mais de rádio/satélite/móvel) — o que justifica
+simular escolas rurais bem abaixo da média municipal do Ookla, mas os
+multiplicadores exatos usados são estimativa do grupo, não um dado
+medido escola a escola. Fontes de contexto (não dos fatores numéricos):
+[Cetic.br — TIC Domicílios 2024](https://cetic.br/pt/noticia/em-duas-decadas-proporcao-de-lares-urbanos-brasileiros-com-internet-passou-de-13-para-85-aponta-tic-domicilios-2024/) ·
+[NIC.br — internet é escassa apenas em 29% dos domicílios na zona rural](https://nic.br/noticia/na-midia/internet-e-escassa-apenas-em-29-dos-domicilios-na-zona-rural/).
+
 ### Fontes investigadas, mas não integradas (ou só parcialmente)
 
 Documentado para deixar claro o processo de decisão, não só o resultado

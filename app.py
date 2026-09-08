@@ -770,6 +770,32 @@ def renderizar_fontes_e_metodologia(
             "escola do estado inteiro, não da seleção filtrada, para o "
             "índice não mudar de escala conforme o filtro de município."
         )
+        st.markdown(
+            "**De onde vem esta fórmula:** 🟠 diferente da banda por aluno "
+            "(que tem a meta de 1 Mbps/aluno oficial do MEC/ENEC), o IPI "
+            "**não tem fonte oficial** — é um índice autoral do grupo, "
+            "criado para este trabalho. Não existe, em nenhum órgão "
+            "(MEC, INEP, Anatel), uma fórmula numérica publicada "
+            "combinando conectividade + ruralidade + porte da escola: os "
+            "pesos 50%/30%/20% e a forma de combiná-los foram definidos "
+            "pela equipe, sem correspondência numérica em fonte externa.\n\n"
+            "O que É real é o **princípio** por trás do termo de maior "
+            "peso (50% para \"não possui banda larga\"): programas "
+            "brasileiros de conectividade escolar como o **FUST** e o "
+            "**PBLE** (Programa Banda Larga nas Escolas, Anatel/FNDE-MEC) "
+            "já usam como critério priorizar primeiro escolas \"em regiões "
+            "de maior vulnerabilidade e sem conectividade adequada\", "
+            "inclusive rurais — mas de forma qualitativa (uma lista de "
+            "critérios), não como uma fórmula com pesos como a nossa. O "
+            "IPI pega essa mesma lógica de priorização e a formaliza "
+            "numericamente, por conta própria do grupo."
+        )
+        st.caption(
+            "Contexto (programas reais que inspiraram o *princípio*, não a "
+            "fórmula em si): "
+            "[Futurecom — O uso do FUST para conectividade nas escolas rurais]"
+            "(https://digital.futurecom.com.br/transformaodigital/gov/o-uso-do-fust-para-conectividade-nas-escolas-rurais/)"
+        )
     with st.expander("Velocidade estimada por escola (calibração com Ookla)"):
         st.markdown(
             "Sem medição real por escola disponível, cada leitura é "
@@ -779,6 +805,33 @@ def renderizar_fontes_e_metodologia(
             "documentada, não uma proporção medida). Um município sem "
             "nenhum tile do Ookla próximo recua para uma faixa genérica "
             "sintética — ver a coluna `fonte_medicao` por registro."
+        )
+        st.markdown(
+            "**De onde vem esta fórmula:** 🟢 o **centro** da simulação é "
+            "real — a média de download/upload/latência do Ookla Speedtest "
+            "por município, medida de verdade. 🟠 mas os **fatores "
+            "0,80x–1,30x (urbana) e 0,15x–0,45x (rural)** que espalham "
+            "cada escola em torno dessa média **não vêm de nenhuma fonte "
+            "externa** — são uma suposição do grupo, sem correspondência "
+            "numérica publicada em nenhum órgão.\n\n"
+            "O que É real é a **direção** da suposição: a pesquisa **TIC "
+            "Domicílios** (NIC.br/Cetic.br) mostra que a zona rural "
+            "brasileira tem conexão estruturalmente pior que a urbana — "
+            "64% dos domicílios urbanos têm fibra/cabo contra 39% dos "
+            "rurais, que dependem mais de rádio/satélite/móvel (mais "
+            "lentos e instáveis). Isso justifica simular escolas rurais "
+            "bem abaixo da média municipal do Ookla (que mistura urbano e "
+            "rural, dominada pelo urbano) — mas os multiplicadores exatos "
+            "usados aqui são estimativa do grupo, não um dado medido "
+            "escola a escola."
+        )
+        st.caption(
+            "Contexto (direção da suposição, não a fonte dos fatores "
+            "numéricos): "
+            "[Cetic.br — TIC Domicílios 2024, conexão urbana x rural]"
+            "(https://cetic.br/pt/noticia/em-duas-decadas-proporcao-de-lares-urbanos-brasileiros-com-internet-passou-de-13-para-85-aponta-tic-domicilios-2024/) · "
+            "[NIC.br — internet é escassa apenas em 29% dos domicílios na zona rural]"
+            "(https://nic.br/noticia/na-midia/internet-e-escassa-apenas-em-29-dos-domicilios-na-zona-rural/)"
         )
 
     st.subheader("Ficha técnica")
