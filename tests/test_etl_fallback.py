@@ -58,9 +58,10 @@ def test_modo_oficial_quando_raw_existe(tmp_path, monkeypatch):
 
     escolas_csv = tmp_path / "escolas_censo_ms.csv"
     escolas_csv.write_text(
-        "co_entidade,no_entidade,co_municipio,tp_localizacao,in_internet,in_banda_larga,"
-        "in_internet_alunos,rede_local,qt_matriculas,latitude,longitude,geo_aproximada\n"
-        "50011774,EE MAL CASTELO BRANCO,5002704,Urbana,1,1,1,A cabo e Wireless,881,-20.43,-52.90,1\n",
+        "co_entidade,no_entidade,co_municipio,tp_localizacao,dependencia_administrativa,"
+        "in_internet,in_banda_larga,in_internet_alunos,rede_local,qt_matriculas,latitude,"
+        "longitude,geo_aproximada\n"
+        "50011774,EE MAL CASTELO BRANCO,5002704,Urbana,Estadual,1,1,1,A cabo e Wireless,881,-20.43,-52.90,1\n",
         encoding="utf-8",
     )
 
@@ -77,11 +78,13 @@ def test_modo_oficial_quando_raw_existe(tmp_path, monkeypatch):
     conexao = sqlite3.connect(database.DB_PATH)
     try:
         (total_escolas,) = conexao.execute("SELECT COUNT(*) FROM escolas;").fetchone()
+        (dependencia,) = conexao.execute("SELECT dependencia_administrativa FROM escolas;").fetchone()
         metadados = dict(conexao.execute("SELECT chave, valor FROM metadata_execucao;").fetchall())
     finally:
         conexao.close()
 
     assert total_escolas == 1
+    assert dependencia == "Estadual"
     assert metadados["fonte_municipios"].startswith("oficial")
     assert metadados["fonte_escolas"].startswith("oficial")
     assert metadados["fonte_medicoes_simet"].startswith("faixa genérica sintética")  # sem baseline Ookla neste teste
@@ -100,9 +103,10 @@ def test_medicoes_usam_baseline_ookla_quando_disponivel(tmp_path, monkeypatch):
 
     escolas_csv = tmp_path / "escolas_censo_ms.csv"
     escolas_csv.write_text(
-        "co_entidade,no_entidade,co_municipio,tp_localizacao,in_internet,in_banda_larga,"
-        "in_internet_alunos,rede_local,qt_matriculas,latitude,longitude,geo_aproximada\n"
-        "50011774,EE MAL CASTELO BRANCO,5002704,Urbana,1,1,1,A cabo e Wireless,881,-20.43,-52.90,1\n",
+        "co_entidade,no_entidade,co_municipio,tp_localizacao,dependencia_administrativa,"
+        "in_internet,in_banda_larga,in_internet_alunos,rede_local,qt_matriculas,latitude,"
+        "longitude,geo_aproximada\n"
+        "50011774,EE MAL CASTELO BRANCO,5002704,Urbana,Estadual,1,1,1,A cabo e Wireless,881,-20.43,-52.90,1\n",
         encoding="utf-8",
     )
 
@@ -152,9 +156,10 @@ def test_medicoes_usam_dado_real_nicbr_quando_disponivel(tmp_path, monkeypatch):
 
     escolas_csv = tmp_path / "escolas_censo_ms.csv"
     escolas_csv.write_text(
-        "co_entidade,no_entidade,co_municipio,tp_localizacao,in_internet,in_banda_larga,"
-        "in_internet_alunos,rede_local,qt_matriculas,latitude,longitude,geo_aproximada\n"
-        "50011774,EE MAL CASTELO BRANCO,5002704,Urbana,1,1,1,A cabo e Wireless,881,-20.43,-52.90,1\n",
+        "co_entidade,no_entidade,co_municipio,tp_localizacao,dependencia_administrativa,"
+        "in_internet,in_banda_larga,in_internet_alunos,rede_local,qt_matriculas,latitude,"
+        "longitude,geo_aproximada\n"
+        "50011774,EE MAL CASTELO BRANCO,5002704,Urbana,Estadual,1,1,1,A cabo e Wireless,881,-20.43,-52.90,1\n",
         encoding="utf-8",
     )
 

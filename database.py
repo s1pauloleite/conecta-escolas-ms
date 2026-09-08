@@ -59,6 +59,7 @@ def criar_banco_dados() -> None:
             no_entidade TEXT NOT NULL,
             co_municipio INTEGER NOT NULL,
             tp_localizacao TEXT CHECK (tp_localizacao IN ('Urbana', 'Rural')),
+            dependencia_administrativa TEXT CHECK (dependencia_administrativa IN ('Federal', 'Estadual', 'Municipal', 'Privada')),
             in_internet INTEGER DEFAULT 0,
             in_banda_larga INTEGER DEFAULT 0,
             in_internet_alunos INTEGER, -- internet disponível especificamente para uso dos alunos (não só administrativo)

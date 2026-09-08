@@ -5,8 +5,8 @@ Projeto da disciplina **Governança, Empreendedorismo e Inovação**, do
 
 **Professor:** Prof. Dr. Marcelo Augusto Santos Turine.
 
-**Autores:** Paulo Henrique da Silva Leite e Gabriel Angeramis Vargas
-Goulart.
+**Autores:** Paulo Henrique da Silva Leite, Gabriel Angeramis Vargas
+Goulart, Ícaro Mateus Gonçalves e Ávalos Luan Vitor Rodrigues de Jesus.
 
 ## Contexto
 
@@ -40,7 +40,8 @@ O painel mostra isso dinamicamente na barra lateral (lido de
 |---|---|---|
 | Municípios (código, população) | 🟢 Oficial | API de Localidades do IBGE |
 | Investimento em educação por município | 🟢 Oficial | Siconfi/Tesouro Nacional (RREO, Anexo 02 — Despesas por Função) |
-| Escolas (localização, matrículas, internet, banda larga, wifi/rede local) | 🟢 Oficial | Censo Escolar 2025 (INEP), filtrado a MS |
+| Escolas (localização, matrículas, internet, banda larga, wifi/rede local, dependência administrativa) | 🟢 Oficial | Censo Escolar 2025 (INEP), filtrado a MS |
+| Meta de 1 Mbps/aluno no turno de pico (limiar "Adequada" da Fase 2) | 🟢 Oficial | [ENEC — Estratégia Nacional de Escolas Conectadas](https://agenciagov.ebc.com.br/noticias/202403/mec-divulga-parametros-de-conectividade-da-enec) (MEC, parâmetros divulgados em mar/2024); **não** vem do INEP — ver nota abaixo sobre a aproximação de 40% |
 | Latitude/longitude das escolas | 🟢 Real (1.377/1.859) · 🟡 Aproximada (restante) | Real via NIC.br para escolas públicas; sede do município para as demais (ver `geo_aproximada` no banco) |
 | Velocidade por escola | 🟢 Medição real (1.105) · 🟡 Estimativa calibrada (748) | Real (SIMET) via planilha exportada manualmente do painel Conectividade na Educação (NIC.br); sem medição própria, ancorada na média real do Ookla Speedtest por município |
 | Nota de transparência (CGU) | ⚪ Indisponível | Mapa Brasil Transparente fora do ar p/ manutenção; só cobre municípios >50 mil hab. |
@@ -51,6 +52,18 @@ acima recua sozinha para uma amostra sintética equivalente, e o painel
 avisa isso na barra lateral — ele nunca finge que um dado sintético é
 oficial. Veja [`data/raw/README.md`](data/raw/README.md) para os
 detalhes de cada limitação e como buscar/atualizar os dados oficiais.
+
+**Sobre a fórmula de banda por aluno (Fase 2):** o conceito de "banda por
+aluno no turno de pico" e a meta de 1 Mbps/aluno são oficiais (MEC/ENEC),
+não do INEP. Mas o MEC calcula isso com o número **real** de alunos
+matriculados no turno de maior movimento (ex.: escola com 300 alunos de
+manhã e 200 à tarde → meta de 300 Mbps); o Censo Escolar que usamos só
+traz a matrícula **total** da escola, sem quebra por turno. Por isso o
+turno de pico é **estimado como 40% das matrículas totais** — uma
+aproximação do grupo, não uma proporção oficial. Detalhado na aba
+"📚 Fontes & Metodologia" do painel. Fontes: [Agência Gov](https://agenciagov.ebc.com.br/noticias/202403/mec-divulga-parametros-de-conectividade-da-enec) ·
+[Conviva Educação](https://convivaeducacao.org.br/fique_atento/4704) ·
+[Nota Técnica nº 182/2025/DAGE/SEB (MEC)](https://www.gov.br/mec/pt-br/escolas-conectadas/arquivos/NotaTcnica.pdf).
 
 ### Fontes investigadas, mas não integradas (ou só parcialmente)
 

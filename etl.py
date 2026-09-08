@@ -72,14 +72,15 @@ VALUES (?, ?, ?, ?, ?, ?);
 INSERT_ESCOLAS_SQL = """
 INSERT INTO escolas
     (co_entidade, no_entidade, co_municipio, tp_localizacao,
-     in_internet, in_banda_larga, in_internet_alunos, rede_local,
-     qt_matriculas, latitude, longitude, geo_aproximada)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+     dependencia_administrativa, in_internet, in_banda_larga,
+     in_internet_alunos, rede_local, qt_matriculas, latitude, longitude,
+     geo_aproximada)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 """
 # Índice (0-based) de geo_aproximada dentro das tuplas montadas com
 # INSERT_ESCOLAS_SQL acima — usado para contar quantas escolas ficaram
 # com geolocalização real vs. aproximada, sem duplicar a lista de campos.
-INDICE_GEO_APROXIMADA = 11
+INDICE_GEO_APROXIMADA = 12
 
 
 def _limpar_tabelas(cursor: sqlite3.Cursor) -> None:
@@ -226,6 +227,7 @@ def _popular_escolas_oficiais(
                 linha.no_entidade,
                 int(linha.co_municipio),
                 linha.tp_localizacao,
+                linha.dependencia_administrativa,
                 int(linha.in_internet),
                 int(linha.in_banda_larga),
                 int(linha.in_internet_alunos),
@@ -277,6 +279,10 @@ def _popular_escolas_sinteticas(cursor: sqlite3.Cursor) -> list[tuple]:
         tem_internet = 1 if rng.random() > 0.1 else 0
         tem_banda_larga = 1 if tem_internet == 1 and rng.random() > 0.3 else 0
         tem_internet_alunos = tem_internet  # simplificação: mesma info nesta amostra sintética
+        # O prefixo do nome fictício já carrega a dependência administrativa
+        # (convenção real do Censo Escolar): "EE" = Escola Estadual, "EM" =
+        # Escola Municipal — evita inventar mais um valor aleatório solto.
+        dependencia_administrativa = "Estadual" if nome.startswith("EE ") else "Municipal"
 
         if tem_internet:
             rede_local = rng.choices(["A cabo e Wireless", "A cabo", "Wireless"], weights=[0.6, 0.25, 0.15])[0]
@@ -285,8 +291,9 @@ def _popular_escolas_sinteticas(cursor: sqlite3.Cursor) -> list[tuple]:
 
         escolas_ms.append(
             (
-                cod_escola, nome, cod_mun, localizacao, tem_internet, tem_banda_larga,
-                tem_internet_alunos, rede_local, vagas, lat, lon, 0,
+                cod_escola, nome, cod_mun, localizacao, dependencia_administrativa,
+                tem_internet, tem_banda_larga, tem_internet_alunos, rede_local,
+                vagas, lat, lon, 0,
             )
         )
 

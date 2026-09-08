@@ -38,9 +38,13 @@ PROFESSOR = "Prof. Dr. Marcelo Augusto Santos Turine"
 AUTORES = [
     "Paulo Henrique da Silva Leite",
     "Gabriel Angeramis Vargas Goulart",
+    "Ícaro Mateus Gonçalves",
+    "Ávalos Luan Vitor Rodrigues de Jesus",
 ]
 
 TODOS_OS_MUNICIPIOS = "Todos os Municípios"
+OPCOES_LOCALIZACAO = ["Urbana", "Rural"]
+OPCOES_DEPENDENCIA = ["Federal", "Estadual", "Municipal", "Privada"]
 
 
 # --------------------------------------------------------------------------- #
@@ -162,6 +166,7 @@ def construir_mapa(df: pd.DataFrame) -> tuple[folium.Map, int]:
             else "<br><i>📍 geolocalização real (NIC.br)</i>"
         )
         rede_local = getattr(escola, "rede_local", None) or "Não informado"
+        dependencia = getattr(escola, "dependencia_administrativa", None) or "Não informada"
 
         folium.Marker(
             location=[lat, lon],
@@ -171,6 +176,7 @@ def construir_mapa(df: pd.DataFrame) -> tuple[folium.Map, int]:
                     f"<b>{escola.no_entidade}</b><br>"
                     f"Município: {escola.no_municipio}<br>"
                     f"Localização: {escola.tp_localizacao}<br>"
+                    f"Dependência administrativa: {dependencia}<br>"
                     f"Matrículas: {int(escola.qt_matriculas)}<br>"
                     f"Internet: {'Sim' if escola.in_internet else 'Não'}<br>"
                     f"Rede local: {rede_local}"
@@ -629,8 +635,13 @@ def renderizar_fontes_e_metodologia(
             },
             {
                 "Fonte": "Censo Escolar 2025 — INEP",
-                "Usado para": "Escolas de MS em atividade: urbana/rural, internet (geral e para alunos), banda larga, rede local (wifi/cabo), matrículas",
+                "Usado para": "Escolas de MS em atividade: urbana/rural, internet (geral e para alunos), banda larga, rede local (wifi/cabo), matrículas, dependência administrativa",
                 "Acesso": "Microdado público, filtrado localmente para MS",
+            },
+            {
+                "Fonte": "ENEC — Estratégia Nacional de Escolas Conectadas (MEC)",
+                "Usado para": "Meta oficial de 1 Mbps/aluno no turno de pico, usada como limiar de classificação \"Adequada\" na Fase 2",
+                "Acesso": "Parâmetros de conectividade divulgados publicamente pelo MEC (mar/2024) — não é do INEP, que só fornece as matrículas",
             },
             {
                 "Fonte": "Conectividade na Educação — NIC.br",
@@ -712,10 +723,39 @@ def renderizar_fontes_e_metodologia(
             r"{\text{Matrículas totais} \times 0{,}40}"
         )
         st.markdown(
-            "Turno de pico estimado em 40% das matrículas totais. "
             "Classificação: **Adequada** ≥ 1000 kbps/aluno · **Parcial** "
-            "100–999 · **Insuficiente** < 100 (referência: Meta ENEC de "
-            "1 Mbps/aluno)."
+            "100–999 · **Insuficiente** < 100."
+        )
+        st.markdown(
+            "**O que é oficial (MEC) e o que é aproximação nossa, separado "
+            "com clareza:**\n"
+            "- 🟢 **Oficial** — o conceito de \"banda por aluno no turno de "
+            "pico\" e o limiar de **1 Mbps/aluno** vêm da **ENEC — "
+            "Estratégia Nacional de Escolas Conectadas** (MEC), cujos "
+            "parâmetros de conectividade foram divulgados em março/2024: "
+            "escolas com 50 a 1.000 alunos no turno de maior movimento "
+            "devem ter no mínimo 1 Mbps por aluno *daquele turno*. Isso "
+            "**não** vem do INEP — o INEP só fornece o total de matrículas "
+            "(Censo Escolar); quem define a meta de conectividade é o "
+            "MEC/ENEC.\n"
+            "- 🟠 **Aproximação nossa** — o MEC calcula a meta com o "
+            "número **real** de alunos matriculados no turno de maior "
+            "movimento (ex.: escola com 300 alunos de manhã e 200 à tarde "
+            "→ meta de 300 Mbps, baseada no turno mais cheio). O Censo "
+            "Escolar que usamos traz só a matrícula **total** da escola, "
+            "sem quebra por turno (matutino/vespertino/noturno). Sem esse "
+            "dado, o turno de pico é **estimado como 40% das matrículas "
+            "totais** — uma suposição do grupo para contornar essa "
+            "limitação, não uma proporção oficial ou medida."
+        )
+        st.caption(
+            "Fontes MEC/ENEC: "
+            "[Agência Gov — MEC divulga parâmetros de conectividade da Enec]"
+            "(https://agenciagov.ebc.com.br/noticias/202403/mec-divulga-parametros-de-conectividade-da-enec) · "
+            "[Conviva Educação — mesma notícia, com o exemplo do turno de maior movimento]"
+            "(https://convivaeducacao.org.br/fique_atento/4704) · "
+            "[MEC — Nota Técnica nº 182/2025/DAGE/SEB]"
+            "(https://www.gov.br/mec/pt-br/escolas-conectadas/arquivos/NotaTcnica.pdf)"
         )
     with st.expander("Índice de Prioridade de Intervenção — IPI (Fase 3)"):
         st.latex(
@@ -755,7 +795,9 @@ def renderizar_fontes_e_metodologia(
 # --------------------------------------------------------------------------- #
 
 
-def renderizar_sidebar(municipios: pd.DataFrame, metadados: dict[str, str]) -> str:
+def renderizar_sidebar(
+    municipios: pd.DataFrame, metadados: dict[str, str]
+) -> tuple[str, list[str], list[str]]:
     st.sidebar.title("📡 ConectaEscolas MS")
     st.sidebar.markdown(
         "**Mestrado em Computação Aplicada — UFMS**  \n"
@@ -769,6 +811,12 @@ def renderizar_sidebar(municipios: pd.DataFrame, metadados: dict[str, str]) -> s
     st.sidebar.divider()
     opcoes = [TODOS_OS_MUNICIPIOS] + municipios["no_municipio"].tolist()
     municipio_selecionado = st.sidebar.selectbox("Filtro Geral por Município", opcoes)
+    localizacoes_selecionadas = st.sidebar.multiselect(
+        "Localização", OPCOES_LOCALIZACAO, default=OPCOES_LOCALIZACAO
+    )
+    dependencias_selecionadas = st.sidebar.multiselect(
+        "Dependência Administrativa", OPCOES_DEPENDENCIA, default=OPCOES_DEPENDENCIA
+    )
 
     if st.sidebar.button("🔄 Recarregar dados"):
         st.cache_data.clear()
@@ -799,7 +847,7 @@ def renderizar_sidebar(municipios: pd.DataFrame, metadados: dict[str, str]) -> s
         "sintética/ilustrativa. Ver README.md para as fontes e limitações "
         "de cada uma."
     )
-    return municipio_selecionado
+    return municipio_selecionado, localizacoes_selecionadas, dependencias_selecionadas
 
 
 def main() -> None:
@@ -820,12 +868,22 @@ def main() -> None:
         st.stop()
 
     base_completa = montar_base_escolas(municipios, escolas, medicoes)
-    municipio_selecionado = renderizar_sidebar(municipios, metadados)
+    municipio_selecionado, localizacoes_selecionadas, dependencias_selecionadas = renderizar_sidebar(
+        municipios, metadados
+    )
 
     if municipio_selecionado == TODOS_OS_MUNICIPIOS:
         base_filtrada = base_completa
     else:
         base_filtrada = base_completa[base_completa["no_municipio"] == municipio_selecionado]
+
+    # Filtros de localização/dependência administrativa não afetam
+    # `base_completa` — o IPI (Fase 3) normaliza sempre pela maior escola do
+    # estado inteiro, para o índice não mudar de escala conforme o filtro.
+    base_filtrada = base_filtrada[
+        base_filtrada["tp_localizacao"].isin(localizacoes_selecionadas)
+        & base_filtrada["dependencia_administrativa"].isin(dependencias_selecionadas)
+    ]
 
     st.title("ConectaEscolas MS — Painel Integrado de Conectividade Escolar")
     st.markdown(

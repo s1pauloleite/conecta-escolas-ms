@@ -63,6 +63,15 @@ MAPA_REDE_LOCAL = {
     9: "Não informado",
 }
 
+# TP_DEPENDENCIA (dicionário de dados do INEP): 1=federal, 2=estadual,
+# 3=municipal, 4=privada.
+MAPA_DEPENDENCIA = {
+    1: "Federal",
+    2: "Estadual",
+    3: "Municipal",
+    4: "Privada",
+}
+
 JITTER_GRAUS = 0.05  # ~5 km, só para espalhar visualmente escolas do mesmo município
 SEED_JITTER = 42
 
@@ -92,6 +101,7 @@ def extrair_escolas_ms() -> pd.DataFrame:
             "CO_MUNICIPIO",
             "NO_MUNICIPIO",
             "TP_LOCALIZACAO",
+            "TP_DEPENDENCIA",
             "TP_SITUACAO_FUNCIONAMENTO",
             "IN_INTERNET",
             "IN_BANDA_LARGA",
@@ -165,6 +175,9 @@ def montar_tabela_final(escolas_ms: pd.DataFrame, matriculas_ms: pd.DataFrame, c
     )
     tabela = tabela.dropna(subset=["tp_localizacao"])  # descarta códigos de localização não mapeados/ausentes
 
+    tabela["dependencia_administrativa"] = tabela["TP_DEPENDENCIA"].map(MAPA_DEPENDENCIA)
+    tabela = tabela.dropna(subset=["dependencia_administrativa"])  # idem, para dependência administrativa
+
     tabela = aplicar_localizacao_aproximada(tabela, coords_municipios)
 
     tabela = tabela.rename(
@@ -185,6 +198,7 @@ def montar_tabela_final(escolas_ms: pd.DataFrame, matriculas_ms: pd.DataFrame, c
             "no_entidade",
             "co_municipio",
             "tp_localizacao",
+            "dependencia_administrativa",
             "in_internet",
             "in_banda_larga",
             "in_internet_alunos",
@@ -224,6 +238,8 @@ def main() -> None:
 
     print("\nResumo por localização:")
     print(tabela_final["tp_localizacao"].value_counts().to_string())
+    print("\nResumo por dependência administrativa:")
+    print(tabela_final["dependencia_administrativa"].value_counts().to_string())
     print("\nResumo de conectividade (in_internet):")
     print(tabela_final["in_internet"].value_counts().to_string())
     print("\nResumo de rede local (wifi/cabo):")
