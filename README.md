@@ -184,6 +184,38 @@ streamlit run app.py
 Pular o passo 3 não quebra nada — o painel funciona igual, só que com a
 amostra de demonstração (e avisa isso na barra lateral).
 
+## Para colaboradores
+
+O repositório é privado; quem for convidado como colaborador (papel
+**Write**) clona normalmente e já recebe o `govtech_ms.db` populado — ele
+é versionado de propósito (ver exceção no `.gitignore`), não precisa
+rodar o ETL para começar a analisar:
+
+```bash
+git clone https://github.com/s1pauloleite/conecta-escolas-ms.git
+```
+
+Depois, siga a seção **Como rodar** acima (`run_app.bat`/`run_app.sh` ou
+o passo a passo manual).
+
+**Fluxo de branches:** em vez de commitar direto na `main`, trabalhe em
+branch por tarefa e abra Pull Request:
+
+```bash
+git checkout -b nome-da-melhoria
+# ... edita, commita ...
+git push -u origin nome-da-melhoria
+# abre o PR no GitHub
+```
+
+**Cuidado com o `govtech_ms.db`:** é um arquivo binário (SQLite) — o git
+não sabe mesclar duas versões dele linha a linha. Se duas pessoas
+rodarem `etl.py` e commitarem o banco em paralelo, o PR da segunda vai
+conflitar e precisa escolher manualmente qual versão vale, não dá para
+mesclar automaticamente. Combine com o grupo: só regenere e commite o
+`.db` depois que a mudança no ETL/schema já estiver mesclada na `main`,
+e evite que duas pessoas façam isso ao mesmo tempo.
+
 ## Tema claro/escuro
 
 `.streamlit/config.toml` define uma paleta de marca para os modos claro e
