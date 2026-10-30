@@ -887,10 +887,17 @@ def renderizar_sidebar(
     }
     for chave, rotulo in rotulos.items():
         valor = metadados.get(chave, "desconhecida (rode `python etl.py`)")
-        if valor.startswith("oficial") or "medição real" in valor:
-            emoji = "🟢"
+        # Verifica da fonte menos confiável para a mais confiável: o valor
+        # pode ser uma descrição combinada (ex.: "medição real ... para 1108
+        # escola(s); estimativa calibrada ... para 751 escola(s)") quando a
+        # carga mistura procedências — nesse caso o selo deve refletir a
+        # fonte mais fraca presente, não a mais forte.
+        if "sintético" in valor or "sintetico" in valor:
+            emoji = "🟠"
         elif "estimativa calibrada" in valor:
             emoji = "🟡"
+        elif valor.startswith("oficial") or "medição real" in valor:
+            emoji = "🟢"
         else:
             emoji = "🟠"
         st.sidebar.caption(f"{emoji} **{rotulo}:** {valor}")

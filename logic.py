@@ -200,9 +200,12 @@ def simular_medicao_calibrada(
     fator_download = rng.uniform(fator_download_min, fator_download_max)
     velocidade_download = round(baseline_download_mbps * fator_download, 2)
     # Upload tende a ser uma fração do download (assimetria típica de banda
-    # larga residencial/fibra GPON); aplica o mesmo fator de porte da
-    # escola sobre o baseline de upload, com uma variação própria pequena.
-    velocidade_upload = round(baseline_upload_mbps * fator_download * rng.uniform(0.85, 1.0), 2)
+    # larga residencial/fibra GPON); usa a proporção upload/download REAL do
+    # baseline do município, com teto de 0.9x para preservar essa assimetria
+    # mesmo nos poucos municípios em que a média do Ookla foge do padrão
+    # (amostra pequena, predominância de rádio/satélite etc.).
+    proporcao_upload = min(baseline_upload_mbps / baseline_download_mbps, 0.9) if baseline_download_mbps else 0.5
+    velocidade_upload = round(velocidade_download * proporcao_upload * rng.uniform(0.85, 1.0), 2)
     latencia = round(baseline_latencia_ms * rng.uniform(fator_latencia_min, fator_latencia_max), 1)
     perda_pacotes = round(rng.uniform(1.0, 5.0) if localizacao_rural else rng.uniform(0.0, 1.5), 2)
 

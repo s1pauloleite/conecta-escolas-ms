@@ -155,15 +155,14 @@ def buscar_investimento_educacao_siconfi(municipios: list[dict]) -> dict[int, fl
                 break
         if resultado is None:
             print(f"  [{i}/{len(municipios)}] {municipio['no_municipio']}: sem RREO disponível, ficará sem dado.")
-            continue
+        else:
+            despesa, populacao_siconfi = resultado
+            if populacao_siconfi > 0:
+                per_capita = round(despesa / populacao_siconfi, 2)
+                investimento_por_municipio[co_municipio] = per_capita
+                print(f"  [{i}/{len(municipios)}] {municipio['no_municipio']}: R$ {per_capita}/hab.")
 
-        despesa, populacao_siconfi = resultado
-        if populacao_siconfi > 0:
-            per_capita = round(despesa / populacao_siconfi, 2)
-            investimento_por_municipio[co_municipio] = per_capita
-            print(f"  [{i}/{len(municipios)}] {municipio['no_municipio']}: R$ {per_capita}/hab.")
-
-        time.sleep(0.2)  # cortesia com a API pública — evita rajada de requisições
+        time.sleep(0.2)  # cortesia com a API pública — evita rajada de requisições (sempre roda, inclusive sem RREO)
 
     print(
         f"Siconfi: investimento em educação obtido para "

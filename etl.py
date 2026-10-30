@@ -360,8 +360,9 @@ def _popular_medicoes(
            disponível para aquela escola/município.
 
     Funciona sobre `escolas_ms` seja ele a amostra oficial ou a sintética —
-    as duas tuplas mantêm a mesma ordem de campos nas 5 primeiras posições
-    (cod_escola, nome, cod_mun, localizacao, tem_internet).
+    as duas tuplas mantêm a mesma ordem de campos nas 6 primeiras posições
+    (cod_escola, nome, cod_mun, localizacao, dependencia_administrativa,
+    tem_internet).
 
     Retorna uma descrição da(s) fonte(s) efetivamente usada(s), para
     `metadata_execucao`.
@@ -371,7 +372,7 @@ def _popular_medicoes(
     medicoes = []
     contagem_fonte = {"nicbr_simet_real": 0, "ookla": 0, "sintetico_generico": 0}
 
-    for cod_escola, _nome, cod_mun, localizacao, tem_internet, *_resto in escolas_ms:
+    for cod_escola, _nome, cod_mun, localizacao, _dependencia, tem_internet, *_resto in escolas_ms:
         if not tem_internet:
             continue  # escola sem internet não tem o que medir
 
